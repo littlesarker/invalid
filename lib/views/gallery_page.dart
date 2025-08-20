@@ -28,11 +28,15 @@ class GalleryPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
+
+              SizedBox(height: 20,),
+
               ElevatedButton(
                 onPressed: () => provider.requestPermission(),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.greenAccent, // ✅ button color
-                  foregroundColor: Colors.white, // ✅ text color (for contrast)
+                  backgroundColor: Colors.greenAccent,
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(250, 45), // full width, height = 50
                 ),
                 child: Text("Grant Access"),
               )
