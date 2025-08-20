@@ -23,8 +23,8 @@ class SplashScreen extends StatelessWidget {
                     Hero(
                       tag: 'app-logo',
                       child: Container(
-                        width: 120,
-                        height: 120,
+                        width: 180,
+                        height: 180,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(24),
@@ -44,33 +44,15 @@ class SplashScreen extends StatelessWidget {
                         )
                       ),
                     ),
-                    const SizedBox(height: 30),
-                    // App name
-                    const Text(
-                      'Photo App',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    // Tagline
-                    const Text(
-                      'Manage your photos easily',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    const SizedBox(height: 40),
+
+                    const SizedBox(height: 100),
                     // Loading indicator
                     if (splashProvider.isLoading)
                       SizedBox(
                         width: 40,
                         height: 40,
                         child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation(Colors.white),
+                          valueColor: AlwaysStoppedAnimation(Colors.black),
                           strokeWidth: 3,
                         ),
                       ),
