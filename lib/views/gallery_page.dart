@@ -91,11 +91,20 @@ class GalleryPage extends StatelessWidget {
             Center(child: CircularProgressIndicator()),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: provider.selected.isNotEmpty
           ? FloatingActionButton.extended(
         onPressed: provider.saveSelected,
-        label: Text("Download"),
-        icon: Icon(Icons.download),
+        backgroundColor: Colors.green,
+        icon: Icon(Icons.download, color: Colors.white),
+        label: Text(
+          "Download",
+          style: TextStyle(color: Colors.white),
+        ),
+        extendedPadding: EdgeInsets.symmetric(horizontal: 100.0), // wider
+        shape: RoundedRectangleBorder( // ✅ rounded border shape
+          borderRadius: BorderRadius.circular(30), // adjust radius for roundness
+        ),
       )
           : null,
     );

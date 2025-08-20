@@ -156,6 +156,9 @@ class GalleryProvider with ChangeNotifier {
         }
       }
 
+      refresh();
+      _loadImages();
+
       final bool allSaved = successCount == _selected.length;
 
       if (!allSaved) {
