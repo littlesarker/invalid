@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'gallery_provider.dart';
+import '../provider/gallery_provider.dart';
 
 class GalleryPage extends StatelessWidget {
   @override
@@ -24,14 +24,19 @@ class GalleryPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Text(
-                  "We need your permission to load photos from your device.",
+                  "To show your black and white photos \n we just need your folder permission. \nWe promise, we don’t take your photos.",
                   textAlign: TextAlign.center,
                 ),
               ),
               ElevatedButton(
                 onPressed: () => provider.requestPermission(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.greenAccent, // ✅ button color
+                  foregroundColor: Colors.white, // ✅ text color (for contrast)
+                ),
                 child: Text("Grant Access"),
-              ),
+              )
+
             ],
           ),
         ),

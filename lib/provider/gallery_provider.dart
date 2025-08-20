@@ -1,6 +1,4 @@
-import 'dart:typed_data';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
@@ -13,31 +11,46 @@ class GalleryProvider with ChangeNotifier {
   bool _isLoading = false;
   bool _hasPermission = false;
   String? _errorMessage;
+  bool _isInitialized = false;
 
   List<Uint8List> get images => _images;
   Set<int> get selected => _selected;
   bool get isLoading => _isLoading;
   bool get hasPermission => _hasPermission;
   String? get errorMessage => _errorMessage;
+  bool get isInitialized => _isInitialized;
 
-  GalleryProvider() {
-    _initialize();
+  /// Initialize gallery provider (replaces loadImages)
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      await checkPermission();
+
+      // Only load images if we have permission
+      if (_hasPermission) {
+        await _loadImages();
+      }
+
+      _isInitialized = true;
+
+    } catch (e) {
+      _handleError("Initialization failed: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
-  Future<void> _initialize() async {
-    await checkPermission();
-  }
-
-  /// Check current permission status
+  /// Check permission status
   Future<void> checkPermission() async {
     try {
       final bool? granted = await platform.invokeMethod('checkPermission');
       _hasPermission = granted ?? false;
       notifyListeners();
-
-      if (_hasPermission) {
-        await loadImages();
-      }
     } on PlatformException catch (e) {
       _handleError("Permission check failed: ${e.message}");
     } catch (e) {
@@ -45,33 +58,8 @@ class GalleryProvider with ChangeNotifier {
     }
   }
 
-  /// Request permission from native side
-  Future<void> requestPermission() async {
-    try {
-      _isLoading = true;
-      _errorMessage = null;
-      notifyListeners();
-
-      await platform.invokeMethod('requestPermission');
-
-      // Wait a moment for the permission dialog to complete
-      await Future.delayed(Duration(milliseconds: 500));
-
-      // Check the new permission status
-      await checkPermission();
-
-    } on PlatformException catch (e) {
-      _handleError("Permission request failed: ${e.message}");
-    } catch (e) {
-      _handleError("Unexpected error during permission request: $e");
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
   /// Load images from gallery
-  Future<void> loadImages() async {
+  Future<void> _loadImages() async {
     try {
       _isLoading = true;
       _errorMessage = null;
@@ -94,6 +82,36 @@ class GalleryProvider with ChangeNotifier {
       }
     } catch (e) {
       _handleError("Unexpected error loading images: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Request permission from native side
+  Future<void> requestPermission() async {
+    try {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+
+      await platform.invokeMethod('requestPermission');
+
+      // Wait a moment for the permission dialog to complete
+      await Future.delayed(Duration(milliseconds: 500));
+
+      // Check the new permission status
+      await checkPermission();
+
+      // Load images if permission was granted
+      if (_hasPermission) {
+        await _loadImages();
+      }
+
+    } on PlatformException catch (e) {
+      _handleError("Permission request failed: ${e.message}");
+    } catch (e) {
+      _handleError("Unexpected error during permission request: $e");
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -174,7 +192,7 @@ class GalleryProvider with ChangeNotifier {
   // Refresh gallery
   Future<void> refresh() async {
     if (_hasPermission) {
-      await loadImages();
+      await _loadImages();
     } else {
       await checkPermission();
     }
